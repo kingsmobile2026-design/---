@@ -1,8 +1,10 @@
 local _lp = game.Players.LocalPlayer
 local _cg = nil
-if gethui then 
-    _cg = gethui() 
-else 
+
+local success, hud = pcall(function() return gethui() end)
+if success and hud then
+    _cg = hud
+else
     _cg = _lp:WaitForChild("PlayerGui", 5) or _lp.PlayerGui
 end
 
@@ -78,6 +80,14 @@ local AllowedYaChoseong = {
     [18] = true
 }
 
+local DoubleChoseongIndex = {
+    [1] = true,
+    [4] = true,
+    [8] = true,
+    [10] = true,
+    [13] = true
+}
+
 local function checkIsKillWord(word)
     if word == "" then return false end
     
@@ -92,6 +102,10 @@ local function checkIsKillWord(word)
         local jongsei = hangulIndex % 28
         local jungseong = math.floor((hangulIndex % 588) / 28)
         local choseong = math.floor(hangulIndex / 588)
+        
+        if DoubleChoseongIndex[choseong] and jongsei > 0 then
+            return true
+        end
         
         if DoubleJongseiIndex[jongsei] or TargetJongseiIndex[jongsei] then
             return true
@@ -129,6 +143,7 @@ do
         function() return http_request end,
         function() return http and http.request or nil end,
         function() local ok, r = pcall(function() return syn.request end) return ok and r or nil end,
+        function() local ok, r = pcall(function() return Fluxus and Fluxus.request or nil end) return ok and r or nil end
     }
     for _, fn in pairs(tbl) do
         local ok, r = pcall(fn)
@@ -567,10 +582,10 @@ task.spawn(function()
                 updateView(ch)
             end
             if frame.Visible then 
-                title.Text = " 글자: '" .. ch .. "'" .. currentTime 
+                title.Text = "  글자: '" .. ch .. "'" .. currentTime 
             end
         elseif frame.Visible then
-            title.Text = " 대기 중" .. currentTime
+            title.Text = "  대기 중" .. currentTime
         end
     end
 end)
