@@ -35,96 +35,64 @@ for _, v in ipairs(specialWords) do
     EndingKillLetters[v] = true
 end
 
+local CustomKillLetters = {
+    ["륨"] = true, ["늄"] = true, ["뮴"] = true, ["튬"] = true,
+    ["꾼"] = true, ["녘"] = true, ["렆"] = true, ["졈"] = true,
+    ["젶"] = true, ["팎"] = true
+}
+
+local ChobanEndingLetters = {
+    ["람"] = true, ["남"] = true, ["응"] = true, ["음"] = true, ["드"] = true, ["브"] = true,
+    ["클"] = true, ["늘"] = true, ["글"] = true, ["들"] = true, ["잘"] = true, ["날"] = true, ["름"] = true
+}
+
 local TargetJongseiIndex = {
-    [23] = true,
-    [24] = true,
-    [25] = true,
-    [26] = true,
-    [27] = true
+    [23] = true, [24] = true, [25] = true, [26] = true, [27] = true
 }
 
 local DoubleJongseiIndex = {
-    [3] = true,
-    [5] = true,
-    [6] = true,
-    [9] = true,
-    [10] = true,
-    [11] = true,
-    [12] = true,
-    [13] = true,
-    [14] = true,
-    [15] = true,
-    [18] = true
+    [3] = true, [5] = true, [6] = true, [9] = true, [10] = true, [11] = true,
+    [12] = true, [13] = true, [14] = true, [15] = true, [18] = true
 }
 
 local AllowedYeoChoseong = {
-    [2] = true,
-    [6] = true,
-    [12] = true,
-    [16] = true,
-    [18] = true
+    [2] = true, [6] = true, [12] = true, [16] = true, [18] = true
 }
 
 local AllowedYaChoseong = {
-    [0] = true,
-    [3] = true,
-    [2] = true,
-    [5] = true,
-    [6] = true,
-    [9] = true,
-    [12] = true,
-    [14] = true,
-    [15] = true,
-    [16] = true,
-    [17] = true,
-    [18] = true
+    [0] = true, [3] = true, [2] = true, [5] = true, [6] = true, [9] = true,
+    [12] = true, [14] = true, [15] = true, [16] = true, [17] = true, [18] = true
 }
 
 local DoubleChoseongIndex = {
-    [1] = true,
-    [4] = true,
-    [8] = true,
-    [10] = true,
-    [13] = true
+    [1] = true, [4] = true, [8] = true, [10] = true, [13] = true
 }
 
 local function checkIsKillWord(word)
     if word == "" then return false end
-    
     local lastChar = string.sub(word, utf8.offset(word, utf8.len(word)))
     
-    if EndingKillLetters[lastChar] then return true end
+    if EndingKillLetters[lastChar] or CustomKillLetters[lastChar] then return true end
     
     local code = utf8.codepoint(lastChar)
     if code >= 0xAC00 and code <= 0xD7A3 then
         local hangulIndex = code - 0xAC00
-        
         local jongsei = hangulIndex % 28
         local jungseong = math.floor((hangulIndex % 588) / 28)
         local choseong = math.floor(hangulIndex / 588)
-        
-        if DoubleChoseongIndex[choseong] and jongsei > 0 then
-            return true
-        end
-        
-        if DoubleJongseiIndex[jongsei] or TargetJongseiIndex[jongsei] then
-            return true
-        end
-        
-        if jungseong == 13 or jungseong == 9 then
-            return true
-        end
-        
-        if jungseong == 6 and AllowedYeoChoseong[choseong] then
-            return true
-        end
-        
-        if jungseong == 2 and AllowedYaChoseong[choseong] then
-            return true
-        end
+        if DoubleChoseongIndex[choseong] and jongsei > 0 then return true end
+        if DoubleJongseiIndex[jongsei] or TargetJongseiIndex[jongsei] then return true end
+        if jungseong == 13 or jungseong == 9 then return true end
+        if jungseong == 6 and AllowedYeoChoseong[choseong] then return true end
+        if jungseong == 2 and AllowedYaChoseong[choseong] then return true end
     end
-    
     return false
+end
+
+local function checkIsChobanWord(word)
+    if word == "" then return false end
+    local lastChar = string.sub(word, utf8.offset(word, utf8.len(word)))
+    return ChobanEndingLetters[lastChar] or false
 end
 
 local WordDB = {
@@ -154,9 +122,7 @@ end
 local function downloadData(url)
     if not requestFunction then return nil end
     local success, response = pcall(requestFunction, {Url = url, Method = "GET"})
-    if success and response.StatusCode == 200 then
-        return response.Body
-    end
+    if success and response.StatusCode == 200 then return response.Body end
     return nil
 end
 
@@ -172,7 +138,6 @@ local function initDataSystem()
             end)
         end
     end
-
     if readfile and isfile and isfile(CACHE_FILE) then
         pcall(function() DICT = HS:JSONDecode(readfile(CACHE_FILE)) end)
     else
@@ -396,31 +361,35 @@ local function findGameTextBox()
     return nil
 end
 
+-- =================================================================
+-- [제노 실행기 최적화 입력 처리 패치]
+-- =================================================================
 local VirtualUser = game:GetService("VirtualUser")
 local function sendWordToGame(word)
     if word == "" then return end
     local targetBox = findGameTextBox()
     if not targetBox then return end
-
     pcall(function()
         targetBox.Text = ""
         targetBox:CaptureFocus()
-        task.wait(0.05)
-        
+        task.wait(0.02) -- 제노 입력 버퍼 대기 시간 조절
         targetBox.Text = word
-        targetBox:GetPropertyChangedSignal("Text"):Fire()
-        task.wait(0.03)
+        
+        if targetBox.FocusLost then
+            local txtChanged = targetBox:GetPropertyChangedSignal("Text")
+            if txtChanged then txtChanged:Fire() end
+        end
+        task.wait(0.02)
         
         pcall(function()
             VirtualUser:CaptureController()
-            VirtualUser:TypeKey("0x0D")
+            VirtualUser:TypeKey("0x0D") -- 가상 키보드 엔터 이벤트 전송
         end)
-
-        if targetBox.FocusLost then
-            targetBox.FocusLost:Fire(_T, Enum.UserInputType.Keyboard)
-        end
-        task.wait(0.05)
         
+        if targetBox.FocusLost then 
+            targetBox.FocusLost:Fire(_T, Enum.UserInputType.Keyboard) 
+        end
+        task.wait(0.02)
         targetBox:ReleaseFocus(_T)
     end)
 end
@@ -441,7 +410,6 @@ local function updateView(key)
     for _, c in ipairs(scroll:GetChildren()) do
         if c:IsA("TextButton") then c:Destroy() end
     end
-
     if key == "" then return end
     local targets = getCompatibleChars(key)
     local uniqueCheck = {}
@@ -451,33 +419,6 @@ local function updateView(key)
             if string.sub(w, 1, string.len(target)) == target then
                 if not uniqueCheck[w] then
                     uniqueCheck[w] = true
-                    
-                    local lbl = Instance.new("TextButton", scroll)
-                    lbl.Size = UDim2.new(1, -5, 0, 30)
-                    lbl.BackgroundColor3 = Color3.fromRGB(90, 25, 30)
-                    lbl.Text = "  🔥 [한방 단어]  " .. w
-                    lbl.TextColor3 = Color3.fromRGB(255, 220, 100)
-                    lbl.Font = Enum.Font.SourceSansBold
-                    lbl.TextSize = 13
-                    lbl.TextXAlignment = Enum.TextXAlignment.Left
-                    lbl.LayoutOrder = 1
-                    Instance.new("UICorner", lbl)
-
-                    lbl.MouseButton1Click:Connect(function()
-                        sendWordToGame(w)
-                    end)
-                end
-                break
-            end
-        end
-    end
-
-    for _, target in ipairs(targets) do
-        if DICT and DICT[target] then
-            for _, w in ipairs(DICT[target]) do
-                if not uniqueCheck[w] then
-                    uniqueCheck[w] = true
-                    
                     local lbl = Instance.new("TextButton", scroll)
                     lbl.Size = UDim2.new(1, -5, 0, 30)
                     lbl.Font = Enum.Font.SourceSansBold
@@ -490,28 +431,61 @@ local function updateView(key)
                         lbl.Text = "  🔥 [한방 단어]  " .. w
                         lbl.TextColor3 = Color3.fromRGB(255, 220, 100)
                         lbl.LayoutOrder = 1
+                    elseif checkIsChobanWord(w) then
+                        lbl.BackgroundColor3 = Color3.fromRGB(15, 80, 150)
+                        lbl.Text = "  ⚡ [초반 추천]  " .. w
+                        lbl.TextColor3 = Color3.fromRGB(130, 220, 255)
+                        lbl.LayoutOrder = 2
                     else
                         lbl.BackgroundColor3 = Color3.fromRGB(30, 45, 35)
                         lbl.Text = "  🛡️ [루프 방어]  " .. w
                         lbl.TextColor3 = Color3.fromRGB(130, 255, 170)
-                        lbl.LayoutOrder = 2
+                        lbl.LayoutOrder = 3
                     end
-
-                    lbl.MouseButton1Click:Connect(function()
-                        sendWordToGame(w)
-                    end)
+                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w) end)
                 end
+                break
             end
         end
     end
 
+    for _, target in ipairs(targets) do
+        if DICT and DICT[target] then
+            for _, w in ipairs(DICT[target]) do
+                if not uniqueCheck[w] then
+                    uniqueCheck[w] = true
+                    local lbl = Instance.new("TextButton", scroll)
+                    lbl.Size = UDim2.new(1, -5, 0, 30)
+                    lbl.Font = Enum.Font.SourceSansBold
+                    lbl.TextSize = 13
+                    lbl.TextXAlignment = Enum.TextXAlignment.Left
+                    Instance.new("UICorner", lbl)
+
+                    if checkIsKillWord(w) then
+                        lbl.BackgroundColor3 = Color3.fromRGB(90, 25, 30)
+                        lbl.Text = "  🔥 [한방 단어]  " .. w
+                        lbl.TextColor3 = Color3.fromRGB(255, 220, 100)
+                        lbl.LayoutOrder = 1
+                    elseif checkIsChobanWord(w) then
+                        lbl.BackgroundColor3 = Color3.fromRGB(15, 80, 150)
+                        lbl.Text = "  ⚡ [초반 추천]  " .. w
+                        lbl.TextColor3 = Color3.fromRGB(130, 220, 255)
+                        lbl.LayoutOrder = 2
+                    else
+                        lbl.BackgroundColor3 = Color3.fromRGB(30, 45, 35)
+                        lbl.Text = "  🛡️ [루프 방어]  " .. w
+                        lbl.TextColor3 = Color3.fromRGB(130, 255, 170)
+                        lbl.LayoutOrder = 3
+                    end
+                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w) end)
+                end
+            end
+        end
+    end
     scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 6)
 end
 
-local function doSearch()
-    updateView(searchBox.Text)
-end
-
+local function doSearch() updateView(searchBox.Text) end
 searchBox:GetPropertyChangedSignal("Text"):Connect(doSearch)
 
 task.delay(1.5, function()
@@ -549,9 +523,7 @@ local function findTurnTime()
     for _, v in ipairs(pGui:GetDescendants()) do
         if v:IsA("TextLabel") and v.Text and v.Text ~= "" then
             local matched = string.match(v.Text, "(%[%d+초%])") or string.match(v.Text, "의 차례%s*(%[%d+초%])")
-            if matched then
-                return " / " .. matched
-            end
+            if matched then return " / " .. matched end
         end
     end
     return ""
@@ -563,9 +535,7 @@ task.spawn(function()
         local currentTime = findTurnTime()
 
         if not targetLabel then
-            if frame.Visible then 
-                title.Text = " 탐색 중..." .. currentTime 
-            end
+            if frame.Visible then title.Text = " 탐색 중..." .. currentTime end
             continue
         end
 
@@ -581,11 +551,9 @@ task.spawn(function()
                 searchBox.Text = ch
                 updateView(ch)
             end
-            if frame.Visible then 
-                title.Text = "  글자: '" .. ch .. "'" .. currentTime 
-            end
+            if frame.Visible then title.Text = " 글자: '" .. ch .. "'" .. currentTime end
         elseif frame.Visible then
-            title.Text = "  대기 중" .. currentTime
+            title.Text = " 대기 중" .. currentTime
         end
     end
 end)
