@@ -342,18 +342,31 @@ customEnterBtn.Font = Enum.Font.SourceSansBold
 customEnterBtn.TextSize = 13
 Instance.new("UICorner", customEnterBtn)
 
+-- =================================================================
+-- [제노 최적화 : 전용 채팅창 실시간 강제 추적 알고리즘 패치]
+-- =================================================================
 local function findGameTextBox()
     local pGui = _lp:FindFirstChildOfClass("PlayerGui")
     if not pGui then return nil end
+    
+    -- 제노 최적화: 유실을 완전히 막기 위해 인스턴스 전수 분석 우선 검사
     for _, v in ipairs(pGui:GetDescendants()) do
         if v:IsA("TextBox") then
-            if v.Parent and (v.Parent.Name == "TypeFrame" or v.Name == "TextBox" or v.Name == "InputText" or 
-               v.Name:find("Input") or v.Name:find("Type") or v.Name:find("Chat")) then
-                v.Visible = _T
-                if v.Parent then v.Parent.Visible = _T end
-                v.Active = _T
-                v.Selectable = _T
-                v.Interactable = _T
+            local name = v.Name
+            local parentName = v.Parent and v.Parent.Name or ""
+            
+            -- 끝말잇기 게임 UI 특유의 핵심 입력창 키워드 정밀 필터링
+            if name == "TextBox" or name == "InputText" or parentName == "TypeFrame" or
+               name:find("Input") or name:find("Type") or name:find("Chat") or parentName:find("Type") then
+                
+                -- 제노 실행기 가상 포커싱을 위한 프레임 가시성 보장 강제 활성화
+                pcall(function()
+                    v.Visible = _T
+                    v.Active = _T
+                    v.Selectable = _T
+                    v.Interactable = _T
+                    if v.Parent then v.Parent.Visible = _T end
+                end)
                 return v
             end
         end
@@ -361,9 +374,6 @@ local function findGameTextBox()
     return nil
 end
 
--- =================================================================
--- [제노 실행기 최적화 입력 처리 패치]
--- =================================================================
 local VirtualUser = game:GetService("VirtualUser")
 local function sendWordToGame(word)
     if word == "" then return end
@@ -372,7 +382,7 @@ local function sendWordToGame(word)
     pcall(function()
         targetBox.Text = ""
         targetBox:CaptureFocus()
-        task.wait(0.02) -- 제노 입력 버퍼 대기 시간 조절
+        task.wait(0.02)
         targetBox.Text = word
         
         if targetBox.FocusLost then
@@ -383,7 +393,7 @@ local function sendWordToGame(word)
         
         pcall(function()
             VirtualUser:CaptureController()
-            VirtualUser:TypeKey("0x0D") -- 가상 키보드 엔터 이벤트 전송
+            VirtualUser:TypeKey("0x0D")
         end)
         
         if targetBox.FocusLost then 
@@ -535,7 +545,7 @@ task.spawn(function()
         local currentTime = findTurnTime()
 
         if not targetLabel then
-            if frame.Visible then title.Text = " 탐색 중..." .. currentTime end
+            if frame.Visible then title.Text = " 🔍 탐색 중..." .. currentTime end
             continue
         end
 
@@ -551,10 +561,9 @@ task.spawn(function()
                 searchBox.Text = ch
                 updateView(ch)
             end
-            if frame.Visible then title.Text = " 글자: '" .. ch .. "'" .. currentTime end
+            if frame.Visible then title.Text = " ⚡ 글자: '" .. ch .. "'" .. currentTime end
         elseif frame.Visible then
-            title.Text = " 대기 중" .. currentTime
+            title.Text = " ⏳ 대기 중" .. currentTime
         end
     end
 end)
-
