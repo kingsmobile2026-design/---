@@ -11,8 +11,7 @@ end
 local _T = not not (1 == 1)
 
 if _cg:FindFirstChild("CustomWordFinderGui") then 
-    _cg["CustomWordFinderGui"]:Destroy() 
-end
+    _cg["CustomWordFinderGui"]:Destroy() end
 
 local DICT_URL = "https://gist.githubusercontent.com/GUMI2029/9c38becd1f90e08aa027b7bda39b73c3/raw/dict.json"
 local CACHE_FILE = "kkutu_dict_cache.json"
@@ -52,7 +51,9 @@ local DoubleChoseongIndex = { [1] = true, [4] = true, [8] = true, [10] = true, [
 
 local function checkIsKillWord(word)
     if word == "" then return false end
-    local lastChar = string.sub(word, utf8.offset(word, utf8.len(word)))
+    local successOffset, offset = pcall(function() return utf8.offset(word, utf8.len(word)) end)
+    if not successOffset or not offset then return false end
+    local lastChar = string.sub(word, offset)
     if EndingKillLetters[lastChar] or CustomKillLetters[lastChar] then return true end
     local code = utf8.codepoint(lastChar)
     if code >= 0xAC00 and code <= 0xD7A3 then
@@ -71,7 +72,9 @@ end
 
 local function checkIsChobanWord(word)
     if word == "" then return false end
-    local lastChar = string.sub(word, utf8.offset(word, utf8.len(word)))
+    local successOffset, offset = pcall(function() return utf8.offset(word, utf8.len(word)) end)
+    if not successOffset or not offset then return false end
+    local lastChar = string.sub(word, offset)
     return ChobanEndingLetters[lastChar] or false
 end
 
@@ -117,8 +120,8 @@ local function wordToKeys(word)
     for _, cp in utf8.codes(word) do
         if cp >= SBASE and cp < SBASE + SCOUNT then
             local s = cp - SBASE
-            keys[#keys+1] = CHO[(s // NCOUNT) + 1]
-            for _, k in ipairs(JUNG_KEYS[(s % NCOUNT) // TCOUNT]) do keys[#keys+1] = k end
+            keys[#keys+1] = CHO[math.floor(s / NCOUNT) + 1]
+            for _, k in ipairs(JUNG_KEYS[math.floor((s % NCOUNT) / TCOUNT)]) do keys[#keys+1] = k end
             local t = s % TCOUNT
             if t > 0 then for _, k in ipairs(JONG_KEYS[t]) do keys[#keys+1] = k end end
         else keys[#keys+1] = cp end
@@ -258,7 +261,6 @@ subLoadLabel.Font = Enum.Font.Code
 subLoadLabel.TextSize = 13
 subLoadLabel.ZIndex = 101
 
--- [UI 축소] 가로 400 -> 300, 세로 240 -> 190 압축
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 300, 0, 190)
 frame.Position = UDim2.new(0.35, 0, 0.3, 0)
@@ -690,7 +692,7 @@ local function updateView(key)
                     uniqueCheck[w] = true
                     resultCount = resultCount + 1
                     local lbl = Instance.new("TextButton", scroll)
-                    lbl.Size = UDim2.new(1, -4, 0, 22) -- 단어 리스트 줄높이 축소
+                    lbl.Size = UDim2.new(1, -4, 0, 22) 
                     lbl.Font = Enum.Font.SourceSansBold
                     lbl.TextSize = 11
                     lbl.TextXAlignment = Enum.TextXAlignment.Left
