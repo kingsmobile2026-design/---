@@ -232,7 +232,7 @@ local fullLoadingFrame = Instance.new("Frame", gui)
 fullLoadingFrame.Size = UDim2.new(3, 0, 3, 0)
 fullLoadingFrame.Position = UDim2.new(-1, 0, -1, 0)
 fullLoadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
-fullLoadingFrame.BackgroundTransparency = 0.6 
+fullLoadingFrame.BackgroundTransparency = 0.6
 fullLoadingFrame.BorderSizePixel = 0
 fullLoadingFrame.ZIndex = 100
 
@@ -399,7 +399,7 @@ local customEnterBtn = Instance.new("TextButton", dictPanel)
 customEnterBtn.Size = UDim2.new(1, -10, 0, 22)
 customEnterBtn.Position = UDim2.new(0, 5, 0, 34)
 customEnterBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 85)
-customEnterBtn.Text = "전송 (Enter)"
+customEnterBtn.Text = "Enter"
 customEnterBtn.TextColor3 = Color3.new(1, 1, 1)
 customEnterBtn.Font = Enum.Font.SourceSansBold
 customEnterBtn.TextSize = 10
@@ -429,12 +429,15 @@ local killSelfBtn = Instance.new("TextButton", dictPanel)
 killSelfBtn.Size = UDim2.new(1, -10, 0, 24)
 killSelfBtn.Position = UDim2.new(0, 5, 0, 108) 
 killSelfBtn.BackgroundColor3 = Color3.fromRGB(150, 35, 45) 
-killSelfBtn.Text = "자살 연타"
+killSelfBtn.Text = "자살 "
 killSelfBtn.TextColor3 = Color3.new(1, 1, 1)
 killSelfBtn.Font = Enum.Font.SourceSansBold
 killSelfBtn.TextSize = 11
 Instance.new("UICorner", killSelfBtn)
 
+----------------------------------------------------
+-- [신규/수정] 도배 판넬 (Spam Panel) 및 AI 모드 세팅
+----------------------------------------------------
 local spamPanel = Instance.new("Frame", rightControlSection)
 spamPanel.Size = UDim2.new(1, 0, 1, -24)
 spamPanel.Position = UDim2.new(0, 0, 0, 24)
@@ -455,7 +458,7 @@ local gameSpamBtn = Instance.new("TextButton", spamPanel)
 gameSpamBtn.Size = UDim2.new(0.5, -6, 0, 24)
 gameSpamBtn.Position = UDim2.new(0.5, 2, 0, 6)
 gameSpamBtn.BackgroundColor3 = Color3.fromRGB(25, 85, 140)
-gameSpamBtn.Text = "게임도배"
+gameSpamBtn.Text = "끝말잇기 도배"
 gameSpamBtn.TextColor3 = Color3.new(1, 1, 1)
 gameSpamBtn.Font = Enum.Font.SourceSansBold
 gameSpamBtn.TextSize = 10
@@ -492,6 +495,42 @@ spamCountBox.Font = Enum.Font.Code
 spamCountBox.TextSize = 12
 spamCountBox.ClearTextOnFocus = false
 Instance.new("UICorner", spamCountBox)
+
+-- [신규] AI 모드 버튼 추가
+local aiModeBtn = Instance.new("TextButton", spamPanel)
+aiModeBtn.Size = UDim2.new(1, -10, 0, 24)
+aiModeBtn.Position = UDim2.new(0, 5, 0, 114)
+aiModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+aiModeBtn.Text = "AI 모드: OFF"
+aiModeBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+aiModeBtn.Font = Enum.Font.SourceSansBold
+aiModeBtn.TextSize = 11
+Instance.new("UICorner", aiModeBtn)
+
+local aiModeActive = false
+local currentTypeSession = 0 -- 인터럽트 방지용 고유 세션 값
+
+local aiPhrases = {
+    "쉽네 ㅋㅋㅋㅋㅋㅋ",
+    "겁나 못하넼ㅋㅋㅋㅋ",
+    "공부좀해라 넌 ㅋㅋㅋㅋ",
+    "화났어요?~~",
+    "에휴 ㅉㅉ"
+}
+
+aiModeBtn.MouseButton1Click:Connect(function()
+    aiModeActive = not aiModeActive
+    if aiModeActive then
+        aiModeBtn.Text = "AI 모드: ON"
+        aiModeBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 140)
+        aiModeBtn.TextColor3 = Color3.fromRGB(255, 200, 255)
+    else
+        aiModeBtn.Text = "AI 모드: OFF"
+        aiModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+        aiModeBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        currentTypeSession = currentTypeSession + 1 -- 진행 중인 AI 타이핑 강제 중단
+    end
+end)
 
 btnTabDict.MouseButton1Click:Connect(function()
     btnTabDict.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
@@ -555,26 +594,57 @@ local function findGameTextBox()
     return nil
 end
 
-local function sendWordToGame(word)
+----------------------------------------------------
+-- [수정] 메인 타이핑 함수 (AI 모드 및 단어 우선 처리 로직 구현)
+----------------------------------------------------
+local function sendWordToGame(word, isAiMode)
     if word == "" then return end
     local targetBox = findGameTextBox()
     if not targetBox then return end
+    
+    -- 단어를 수동/자동으로 직접 누른 경우 무조건 AI 타이핑 세션을 초기화시켜서 중단함
+    if not isAiMode then
+        currentTypeSession = currentTypeSession + 1
+    end
+    
+    local mySession = currentTypeSession
     local speed = tonumber(speedInputBox.Text) or 400
+    
     pcall(function()
         targetBox.Text = ""
         targetBox:CaptureFocus() 
+        
         if speed <= 0 then
+            if mySession ~= currentTypeSession then return end
             targetBox.Text = word
         else
             local totalStates = buildTypeStates(word)
             local delayTime = 60 / (speed * 2.5) 
             for _, partialText in ipairs(totalStates) do
+                if mySession ~= currentTypeSession then return end -- 인터럽트 발생 시 타이핑 즉각 중지
                 targetBox.Text = partialText
                 task.wait(delayTime)
             end
         end
-        task.wait(0.01)
-        targetBox:ReleaseFocus(_T) 
+        
+        if mySession ~= currentTypeSession then return end
+        
+        if isAiMode then
+            -- [AI 모드] 엔터 치지 않고 3초간 입력 창 유지
+            local waitTime = 0
+            while waitTime < 3 do
+                if mySession ~= currentTypeSession then return end -- 3초 대기 중 단어가 클릭되면 중단
+                task.wait(0.1)
+                waitTime = waitTime + 0.1
+            end
+            if mySession == currentTypeSession then
+                targetBox:ReleaseFocus(false) -- 엔터 키 없이 포커스만 해제
+            end
+        else
+            -- [일반 단어장 클릭] 완료 후 즉시 전송(엔터)
+            task.wait(0.01)
+            targetBox:ReleaseFocus(_T) 
+        end
     end)
 end
 
@@ -714,7 +784,7 @@ local function updateView(key)
                         lbl.TextColor3 = Color3.fromRGB(130, 255, 170)
                         lbl.LayoutOrder = 3
                     end
-                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w) end)
+                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w, false) end)
                 end
                 break
             end
@@ -750,7 +820,7 @@ local function updateView(key)
                         lbl.TextColor3 = Color3.fromRGB(130, 255, 170)
                         lbl.LayoutOrder = 3
                     end
-                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w) end)
+                    lbl.MouseButton1Click:Connect(function() sendWordToGame(w, false) end)
                 end
             end
         end
@@ -800,6 +870,9 @@ local function findTurnTime()
     return ""
 end
 
+----------------------------------------------------
+-- [수정] 메인 관전자 라벨 감지 루프 (AI 모드 챗 유도 추가)
+----------------------------------------------------
 task.spawn(function()
     while task.wait(0.15) do
         local targetLabel = findSpectatorLabel()
@@ -819,6 +892,15 @@ task.spawn(function()
                 _lt = ch
                 searchBox.Text = ch
                 updateView(ch)
+                
+                -- [신규] 끝말잇기 입력창이 활성화되는 턴 교체 감지 시 AI 모드 처리
+                if aiModeActive then
+                    task.spawn(function()
+                        task.wait(0.1) -- 단어장 정렬 완료를 위한 아주 미세한 지연
+                        local randomPhrase = aiPhrases[math.random(1, #aiPhrases)]
+                        sendWordToGame(randomPhrase, true)
+                    end)
+                end
             end
             if frame.Visible then title.Text = " 글자: '" .. ch .. "'" .. currentTime end
         elseif frame.Visible then title.Text = " 대기 중" .. currentTime end
