@@ -262,7 +262,7 @@ subLoadLabel.TextSize = 13
 subLoadLabel.ZIndex = 101
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 190)
+frame.Size = UDim2.new(0, 400, 0, 240)
 frame.Position = UDim2.new(0.35, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
 frame.Active = _T
