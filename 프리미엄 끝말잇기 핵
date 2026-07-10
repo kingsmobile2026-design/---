@@ -400,7 +400,7 @@ local speedLabel = Instance.new("TextLabel", customInputSection)
 speedLabel.Size = UDim2.new(1, 0, 0, 20)
 speedLabel.Position = UDim2.new(0, 0, 0, 112)
 speedLabel.BackgroundTransparency = 1
-speedLabel.Text = "타자 속도 설정 (0~1000(0은 한번에 입력))"
+speedLabel.Text = "타자 속도 설정 (0~1000)"
 speedLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
 speedLabel.Font = Enum.Font.SourceSansBold
 speedLabel.TextSize = 11
@@ -436,8 +436,8 @@ end)
 
 local killSelfBtn = Instance.new("TextButton", customInputSection)
 killSelfBtn.Size = UDim2.new(1, -16, 0, 32)
-killSelfBtn.Position = UDim2.new(0, 8, 0, 176) -- 속도 세팅 박스 하단부에 레이아웃 정렬 배치
-killSelfBtn.BackgroundColor3 = Color3.fromRGB(160, 35, 45) -- 위험 신호 적색 처리
+killSelfBtn.Position = UDim2.new(0, 8, 0, 176) 
+killSelfBtn.BackgroundColor3 = Color3.fromRGB(160, 35, 45) 
 killSelfBtn.Text = "자살"
 killSelfBtn.TextColor3 = Color3.new(1, 1, 1)
 killSelfBtn.Font = Enum.Font.SourceSansBold
@@ -667,8 +667,7 @@ task.spawn(function()
             if ch ~= _lt then
                 _lt = ch
                 searchBox.Text = ch
-                local count = updateView(ch)
-                if (ch == "븀" or ch == "뮴") and count == 0 then runEmergencySpam() end
+                updateView(ch)
             end
             if frame.Visible then title.Text = " ⚡ 글자: '" .. ch .. "'" .. currentTime end
         elseif frame.Visible then title.Text = " ⏳ 대기 중" .. currentTime end
