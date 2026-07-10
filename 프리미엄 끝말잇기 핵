@@ -11,7 +11,8 @@ end
 local _T = not not (1 == 1)
 
 if _cg:FindFirstChild("CustomWordFinderGui") then 
-    _cg["CustomWordFinderGui"]:Destroy() end
+    _cg["CustomWordFinderGui"]:Destroy() 
+end
 
 local DICT_URL = "https://gist.githubusercontent.com/GUMI2029/9c38becd1f90e08aa027b7bda39b73c3/raw/dict.json"
 local CACHE_FILE = "kkutu_dict_cache.json"
@@ -251,7 +252,7 @@ local subLoadLabel = Instance.new("TextLabel", contentHolder)
 subLoadLabel.Size = UDim2.new(0, 500, 0, 30)
 subLoadLabel.Position = UDim2.new(0.5, -250, 0.5, 15)
 subLoadLabel.BackgroundTransparency = 1
-subLoadLabel.Text = "—  Black's SCRIPT Active  —"
+subLoadLabel.Text = "—  Black's INTEGRATED SCRIPT  —"
 subLoadLabel.TextColor3 = Color3.fromRGB(0, 255, 140) 
 subLoadLabel.Font = Enum.Font.Code
 subLoadLabel.TextSize = 16
@@ -269,16 +270,15 @@ creditLabel.TextXAlignment = Enum.TextXAlignment.Right
 creditLabel.ZIndex = 101
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0.44, 0, 0.55, 0)
-frame.Position = UDim2.new(0.42, 0, 0.2, 0)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-frame.BackgroundTransparency = 0.15 
+frame.Size = UDim2.new(0, 600, 0, 360)
+frame.Position = UDim2.new(0.3, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
 frame.Active = _T
 frame.Visible = false
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
 
 local toggleBtn = Instance.new("TextButton", gui)
-toggleBtn.Size = UDim2.new(0, 90, 0, 35)
+toggleBtn.Size = UDim2.new(0, 100, 0, 35)
 toggleBtn.Position = UDim2.new(0, 15, 0.45, 0)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 toggleBtn.Text = "단어장 ON"
@@ -301,8 +301,8 @@ end)
 
 local title = Instance.new("TextButton", frame)
 title.Size = UDim2.new(1, 0, 0, 35)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-title.Text = "  검색기 (" .. #WordDB .. "개)"
+title.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+title.Text = "  끝말잇기 멀티 툴 (단어수: " .. #WordDB .. "개)"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 13
@@ -331,14 +331,14 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-local wordListSection = Instance.new("Frame", frame)
-wordListSection.Size = UDim2.new(0.65, 0, 1, -35)
-wordListSection.Position = UDim2.new(0, 0, 0, 35)
-wordListSection.BackgroundTransparency = 1
+local mainTabSection = Instance.new("Frame", frame)
+mainTabSection.Size = UDim2.new(0.62, 0, 1, -35)
+mainTabSection.Position = UDim2.new(0, 0, 0, 35)
+mainTabSection.BackgroundTransparency = 1
 
-local searchBox = Instance.new("TextBox", wordListSection)
-searchBox.Size = UDim2.new(1, -20, 0, 32)
-searchBox.Position = UDim2.new(0, 10, 0, 7)
+local searchBox = Instance.new("TextBox", mainTabSection)
+searchBox.Size = UDim2.new(1, -20, 0, 30)
+searchBox.Position = UDim2.new(0, 10, 0, 8)
 searchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 searchBox.PlaceholderText = "검색할 글자 입력..."
 searchBox.Text = ""
@@ -348,9 +348,9 @@ searchBox.TextSize = 14
 searchBox.ClearTextOnFocus = false
 Instance.new("UICorner", searchBox)
 
-local scroll = Instance.new("ScrollingFrame", wordListSection)
+local scroll = Instance.new("ScrollingFrame", mainTabSection)
 scroll.Size = UDim2.new(1, -20, 1, -52)
-scroll.Position = UDim2.new(0, 10, 0, 45)
+scroll.Position = UDim2.new(0, 10, 0, 44)
 scroll.BackgroundTransparency = 1
 scroll.ScrollBarThickness = 4
 
@@ -358,27 +358,53 @@ local layout = Instance.new("UIListLayout", scroll)
 layout.Padding = UDim.new(0, 4)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 
-local customInputSection = Instance.new("Frame", frame)
-customInputSection.Size = UDim2.new(0.35, 0, 1, -35)
-customInputSection.Position = UDim2.new(0.65, 0, 0, 35)
-customInputSection.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
-customInputSection.BackgroundTransparency = 0.2
-customInputSection.BorderSizePixel = 0
+local rightControlSection = Instance.new("Frame", frame)
+rightControlSection.Size = UDim2.new(0.38, 0, 1, -35)
+rightControlSection.Position = UDim2.new(0.62, 0, 0, 35)
+rightControlSection.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
+rightControlSection.BorderSizePixel = 0
 
-local customTitle = Instance.new("TextLabel", customInputSection)
-customTitle.Size = UDim2.new(1, 0, 0, 25)
+local tabContainer = Instance.new("Frame", rightControlSection)
+tabContainer.Size = UDim2.new(1, 0, 0, 30)
+tabContainer.Position = UDim2.new(0, 0, 0, 0)
+tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+
+local btnTabDict = Instance.new("TextButton", tabContainer)
+btnTabDict.Size = UDim2.new(0.5, 0, 1, 0)
+btnTabDict.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
+btnTabDict.Text = "단어장 옵션"
+btnTabDict.TextColor3 = Color3.fromRGB(0, 255, 140)
+btnTabDict.Font = Enum.Font.SourceSansBold
+btnTabDict.TextSize = 12
+
+local btnTabSpam = Instance.new("TextButton", tabContainer)
+btnTabSpam.Size = UDim2.new(0.5, 0, 1, 0)
+btnTabSpam.Position = UDim2.new(0.5, 0, 0, 0)
+btnTabSpam.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+btnTabSpam.Text = "도배 기능"
+btnTabSpam.TextColor3 = Color3.fromRGB(180, 180, 180)
+btnTabSpam.Font = Enum.Font.SourceSansBold
+btnTabSpam.TextSize = 12
+
+local dictPanel = Instance.new("Frame", rightControlSection)
+dictPanel.Size = UDim2.new(1, 0, 1, -30)
+dictPanel.Position = UDim2.new(0, 0, 0, 30)
+dictPanel.BackgroundTransparency = 1
+
+local customTitle = Instance.new("TextLabel", dictPanel)
+customTitle.Size = UDim2.new(1, 0, 0, 20)
 customTitle.Position = UDim2.new(0, 0, 0, 5)
 customTitle.BackgroundTransparency = 1
-customTitle.Text = "자유 입력"
-customTitle.TextColor3 = Color3.fromRGB(180, 180, 190)
+customTitle.Text = "자유 단어"
+customTitle.TextColor3 = Color3.fromRGB(170, 170, 180)
 customTitle.Font = Enum.Font.SourceSansBold
 customTitle.TextSize = 12
 
-local customInputBox = Instance.new("TextBox", customInputSection)
-customInputBox.Size = UDim2.new(1, -16, 0, 32)
-customInputBox.Position = UDim2.new(0, 8, 0, 30)
+local customInputBox = Instance.new("TextBox", dictPanel)
+customInputBox.Size = UDim2.new(1, -16, 0, 30)
+customInputBox.Position = UDim2.new(0, 8, 0, 25)
 customInputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-customInputBox.PlaceholderText = "단어 입력..."
+customInputBox.PlaceholderText = "보낼 단어 입력..."
 customInputBox.Text = ""
 customInputBox.TextColor3 = Color3.new(1, 1, 1)
 customInputBox.Font = Enum.Font.SourceSans
@@ -386,63 +412,148 @@ customInputBox.TextSize = 13
 customInputBox.ClearTextOnFocus = false
 Instance.new("UICorner", customInputBox)
 
-local customEnterBtn = Instance.new("TextButton", customInputSection)
-customEnterBtn.Size = UDim2.new(1, -16, 0, 32)
-customEnterBtn.Position = UDim2.new(0, 8, 0, 68)
-customEnterBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 90)
+local customEnterBtn = Instance.new("TextButton", dictPanel)
+customEnterBtn.Size = UDim2.new(1, -16, 0, 30)
+customEnterBtn.Position = UDim2.new(0, 8, 0, 60)
+customEnterBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 85)
 customEnterBtn.Text = "ENTER"
 customEnterBtn.TextColor3 = Color3.new(1, 1, 1)
 customEnterBtn.Font = Enum.Font.SourceSansBold
-customEnterBtn.TextSize = 13
+customEnterBtn.TextSize = 12
 Instance.new("UICorner", customEnterBtn)
 
-local speedLabel = Instance.new("TextLabel", customInputSection)
+local speedLabel = Instance.new("TextLabel", dictPanel)
 speedLabel.Size = UDim2.new(1, 0, 0, 20)
-speedLabel.Position = UDim2.new(0, 0, 0, 112)
+speedLabel.Position = UDim2.new(0, 0, 0, 100)
 speedLabel.BackgroundTransparency = 1
-speedLabel.Text = "타자 속도 설정 (0~1000)"
-speedLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
+speedLabel.Text = "타자 속도 설정 (0=바로입력)"
+speedLabel.TextColor3 = Color3.fromRGB(170, 170, 180)
 speedLabel.Font = Enum.Font.SourceSansBold
 speedLabel.TextSize = 11
 
-local speedInputBox = Instance.new("TextBox", customInputSection)
+local speedInputBox = Instance.new("TextBox", dictPanel)
 speedInputBox.Size = UDim2.new(1, -16, 0, 30)
-speedInputBox.Position = UDim2.new(0, 8, 0, 134)
+speedInputBox.Position = UDim2.new(0, 8, 0, 120)
 speedInputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-speedInputBox.PlaceholderText = "기본값: 400"
 speedInputBox.Text = "400" 
 speedInputBox.TextColor3 = Color3.fromRGB(0, 255, 140)
 speedInputBox.Font = Enum.Font.Code
-speedInputBox.TextSize = 14
+speedInputBox.TextSize = 13
 speedInputBox.ClearTextOnFocus = false
 Instance.new("UICorner", speedInputBox)
 
-speedInputBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local text = speedInputBox.Text
-    if text == "" then return end
-    local num = tonumber(text)
-    if not num then
-        speedInputBox.Text = text:gsub("%D", "") 
-    else
-        if num > 1000 then speedInputBox.Text = "1000"
-        elseif num < 0 then speedInputBox.Text = "0" end
-    end
-end)
-
-speedInputBox.FocusLost:Connect(function()
-    local num = tonumber(speedInputBox.Text)
-    if not num then speedInputBox.Text = "400" end
-end)
-
-local killSelfBtn = Instance.new("TextButton", customInputSection)
+local killSelfBtn = Instance.new("TextButton", dictPanel)
 killSelfBtn.Size = UDim2.new(1, -16, 0, 32)
-killSelfBtn.Position = UDim2.new(0, 8, 0, 176) 
-killSelfBtn.BackgroundColor3 = Color3.fromRGB(160, 35, 45) 
+killSelfBtn.Position = UDim2.new(0, 8, 0, 240) 
+killSelfBtn.BackgroundColor3 = Color3.fromRGB(150, 35, 45) 
 killSelfBtn.Text = "자살"
 killSelfBtn.TextColor3 = Color3.new(1, 1, 1)
 killSelfBtn.Font = Enum.Font.SourceSansBold
-killSelfBtn.TextSize = 14
+killSelfBtn.TextSize = 13
 Instance.new("UICorner", killSelfBtn)
+
+local spamPanel = Instance.new("Frame", rightControlSection)
+spamPanel.Size = UDim2.new(1, 0, 1, -30)
+spamPanel.Position = UDim2.new(0, 0, 0, 30)
+spamPanel.BackgroundTransparency = 1
+spamPanel.Visible = false
+
+local chatSpamBtn = Instance.new("TextButton", spamPanel)
+chatSpamBtn.Size = UDim2.new(0.5, -12, 0, 35)
+chatSpamBtn.Position = UDim2.new(0, 8, 0, 10)
+chatSpamBtn.BackgroundColor3 = Color3.fromRGB(120, 75, 20)
+chatSpamBtn.Text = "채팅창 도배"
+chatSpamBtn.TextColor3 = Color3.new(1, 1, 1)
+chatSpamBtn.Font = Enum.Font.SourceSansBold
+chatSpamBtn.TextSize = 13
+Instance.new("UICorner", chatSpamBtn)
+
+local gameSpamBtn = Instance.new("TextButton", spamPanel)
+gameSpamBtn.Size = UDim2.new(0.5, -12, 0, 35)
+gameSpamBtn.Position = UDim2.new(0.5, 4, 0, 10)
+gameSpamBtn.BackgroundColor3 = Color3.fromRGB(25, 85, 140)
+gameSpamBtn.Text = "끝말잇기 도배"
+gameSpamBtn.TextColor3 = Color3.new(1, 1, 1)
+gameSpamBtn.Font = Enum.Font.SourceSansBold
+gameSpamBtn.TextSize = 13
+Instance.new("UICorner", gameSpamBtn)
+
+local spamInputLabel = Instance.new("TextLabel", spamPanel)
+spamInputLabel.Size = UDim2.new(1, 0, 0, 20)
+spamInputLabel.Position = UDim2.new(0, 0, 0, 55)
+spamInputLabel.BackgroundTransparency = 1
+spamInputLabel.Text = "도배할 문장 입력"
+spamInputLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+spamInputLabel.Font = Enum.Font.SourceSansBold
+spamInputLabel.TextSize = 12
+
+local spamTextBox = Instance.new("TextBox", spamPanel)
+spamTextBox.Size = UDim2.new(1, -16, 0, 32)
+spamTextBox.Position = UDim2.new(0, 8, 0, 75)
+spamTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+spamTextBox.PlaceholderText = "도배할 내용 작성..."
+spamTextBox.Text = ""
+spamTextBox.TextColor3 = Color3.new(1, 1, 1)
+spamTextBox.Font = Enum.Font.SourceSans
+spamTextBox.TextSize = 13
+spamTextBox.ClearTextOnFocus = false
+Instance.new("UICorner", spamTextBox)
+
+local spamCountLabel = Instance.new("TextLabel", spamPanel)
+spamCountLabel.Size = UDim2.new(1, 0, 0, 20)
+spamCountLabel.Position = UDim2.new(0, 0, 0, 115)
+spamCountLabel.BackgroundTransparency = 1
+spamCountLabel.Text = "도배 횟수 설정 (1~10번)"
+spamCountLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+spamCountLabel.Font = Enum.Font.SourceSansBold
+spamCountLabel.TextSize = 12
+
+local spamCountBox = Instance.new("TextBox", spamPanel)
+spamCountBox.Size = UDim2.new(1, -16, 0, 30)
+spamCountBox.Position = UDim2.new(0, 8, 0, 135)
+spamCountBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+spamCountBox.Text = "5"
+spamCountBox.TextColor3 = Color3.fromRGB(255, 200, 50)
+spamCountBox.Font = Enum.Font.Code
+spamCountBox.TextSize = 14
+spamCountBox.ClearTextOnFocus = false
+Instance.new("UICorner", spamCountBox)
+
+btnTabDict.MouseButton1Click:Connect(function()
+    btnTabDict.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
+    btnTabDict.TextColor3 = Color3.fromRGB(0, 255, 140)
+    btnTabSpam.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    btnTabSpam.TextColor3 = Color3.fromRGB(180, 180, 180)
+    dictPanel.Visible = _T
+    spamPanel.Visible = false
+end)
+
+btnTabSpam.MouseButton1Click:Connect(function()
+    btnTabSpam.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
+    btnTabSpam.TextColor3 = Color3.fromRGB(255, 170, 0)
+    btnTabDict.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    btnTabDict.TextColor3 = Color3.fromRGB(180, 180, 180)
+    spamPanel.Visible = _T
+    dictPanel.Visible = false
+end)
+
+speedInputBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local t = speedInputBox.Text
+    if t == "" then return end
+    if not tonumber(t) then speedInputBox.Text = t:gsub("%D", "") end
+end)
+
+spamCountBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local t = spamCountBox.Text
+    if t == "" then return end
+    local n = tonumber(t)
+    if not n then
+        spamCountBox.Text = t:gsub("%D", "")
+    else
+        if n > 10 then spamCountBox.Text = "10"
+        elseif n < 1 then spamCountBox.Text = "1" end
+    end
+end)
 
 local function findGameTextBox()
     local plGui = game:GetService("Players").LocalPlayer:FindFirstChildOfClass("PlayerGui")
@@ -492,6 +603,75 @@ local function sendWordToGame(word)
         targetBox:ReleaseFocus(_T) 
     end)
 end
+
+chatSpamBtn.MouseButton1Click:Connect(function()
+    local msg = spamTextBox.Text
+    local count = tonumber(spamCountBox.Text) or 1
+    if msg == "" then return end
+    
+    task.spawn(function()
+        local textChatService = game:GetService("TextChatService")
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        
+        for i = 1, count do
+            local sent = false
+            
+            if textChatService and textChatService.ChatInputBarConfiguration then
+                local currentChannel = textChatService.ChatInputBarConfiguration.TargetTextChannel
+                if currentChannel then
+                    currentChannel:SendAsync(msg)
+                    sent = true
+                end
+            end
+            
+            if not sent then
+                local sayMessage = replicatedStorage:FindFirstChild("SayMessageRequest", true) or replicatedStorage:FindFirstChild("DefaultChatSystemChatEvents") and replicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
+                if sayMessage and sayMessage:IsA("RemoteEvent") then
+                    sayMessage:FireServer(msg, "All")
+                else
+
+                    local chatBar = _lp.PlayerGui:FindFirstChild("Chat") and _lp.PlayerGui.Chat:FindFirstChild("Frame") and _lp.PlayerGui.Chat.Frame:FindFirstChild("ChatBarParentFrame")
+                    local realBar = chatBar and chatBar:FindFirstChild("Frame") and chatBar.Frame:FindFirstChild("BoxFrame") and chatBar.Frame.BoxFrame:FindFirstChild("ChatBar")
+                    if realBar and realBar:IsA("TextBox") then
+                        realBar:CaptureFocus()
+                        realBar.Text = msg
+                        task.wait(0.05)
+                        realBar:ReleaseFocus(true)
+                    end
+                end
+            end
+            
+            task.wait(0.5)
+        end
+    end)
+end)
+
+gameSpamBtn.MouseButton1Click:Connect(function()
+    local msg = spamTextBox.Text
+    local count = tonumber(spamCountBox.Text) or 1
+    if msg == "" then return end
+    
+    local targetBox = findGameTextBox()
+    if not targetBox then return end
+    
+    task.spawn(function()
+        pcall(function()
+            targetBox:CaptureFocus()
+            for i = 1, count do
+                local totalStates = buildTypeStates(msg)
+                for _, partialText in ipairs(totalStates) do
+                    targetBox.Text = partialText
+                    task.wait(0.01)
+                end
+                task.wait(0.4)
+                targetBox.Text = ""
+                task.wait(0.3)
+            end
+            targetBox.Text = ""
+            targetBox:ReleaseFocus(false)
+        end)
+    end)
+end)
 
 local function runEmergencySpam()
     local targetBox = findGameTextBox()
@@ -655,7 +835,7 @@ task.spawn(function()
         local currentTime = findTurnTime()
 
         if not targetLabel then
-            if frame.Visible then title.Text = " 🔍 탐색 중..." .. currentTime end
+            if frame.Visible then title.Text = " 탐색 중..." .. currentTime end
             continue
         end
 
@@ -669,7 +849,7 @@ task.spawn(function()
                 searchBox.Text = ch
                 updateView(ch)
             end
-            if frame.Visible then title.Text = " ⚡ 글자: '" .. ch .. "'" .. currentTime end
-        elseif frame.Visible then title.Text = " ⏳ 대기 중" .. currentTime end
+            if frame.Visible then title.Text = " 글자: '" .. ch .. "'" .. currentTime end
+        elseif frame.Visible then title.Text = " 대기 중" .. currentTime end
     end
 end)
