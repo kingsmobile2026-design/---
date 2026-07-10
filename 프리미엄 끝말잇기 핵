@@ -229,7 +229,7 @@ local fullLoadingFrame = Instance.new("Frame", gui)
 fullLoadingFrame.Size = UDim2.new(3, 0, 3, 0)
 fullLoadingFrame.Position = UDim2.new(-1, 0, -1, 0)
 fullLoadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
-fullLoadingFrame.BackgroundTransparency = 0.4 
+fullLoadingFrame.BackgroundTransparency = 0.6 
 fullLoadingFrame.BorderSizePixel = 0
 fullLoadingFrame.ZIndex = 100
 
@@ -270,7 +270,7 @@ creditLabel.TextXAlignment = Enum.TextXAlignment.Right
 creditLabel.ZIndex = 101
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 600, 0, 360)
+frame.Size = UDim2.new(0, 400, 0, 240)
 frame.Position = UDim2.new(0.3, 0, 0.25, 0)
 frame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
 frame.Active = _T
