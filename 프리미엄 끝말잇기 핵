@@ -40,7 +40,7 @@ local CustomKillLetters = {
 }
 
 local ChobanEndingLetters = {
-    ["람"] = true, ["남"] = true, ["응"] = true, ["음"] = true, ["드"] = true, ["브"] = true,
+    ["람"] = true, ["남"] = true, ["응"] = true, ["음"] = true, ["드"] = true, ["브"] = true, ["꾼"] = true, ["킷"] = tue
     ["클"] = true, ["늘"] = true, ["글"] = true, ["들"] = true, ["잘"] = true, ["날"] = true, ["름"] = true
 }
 
@@ -433,7 +433,7 @@ speedLabel.TextSize = 11
 
 local speedInputBox = Instance.new("TextBox", dictPanel)
 speedInputBox.Size = UDim2.new(1, -16, 0, 30)
-speedInputBox.Position = UDim2.new(0, 8, 0, 120)
+speedInputBox.Position = UDim2.new(0, 5, 0, 150)
 speedInputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 speedInputBox.Text = "400" 
 speedInputBox.TextColor3 = Color3.fromRGB(0, 255, 140)
