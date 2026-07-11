@@ -18,9 +18,17 @@ local CACHE_FILE = "kkutu_dict_cache.json"
 local DUEUM_URL = "https://gist.githubusercontent.com/GUMI2029/9c38becd1f90e08aa027b7bda39b73c3/raw/dueum_map.json"
 local DUEUM_CACHE = "kkutu_dueum_cache.json"
 local HS = game:GetService("HttpService")
+local UIS = game:GetService("UserInputService")
 
 local DICT = {}
 local DUEUM = {}
+
+local function checkIsPlatformPC()
+    return (not UIS.TouchEnabled) and UIS.KeyboardEnabled
+end
+
+local isPC = checkIsPlatformPC()
+local uiScale = isPC and 1.6 or 1.0
 
 local specialWords = {
     "륨", "늄", "듐", "튬", "슘", "귬", "윰", "긋", "뜯", "쁨", "끔", "쯤", "쿰", "뮴",
@@ -261,24 +269,27 @@ subLoadLabel.Font = Enum.Font.Code
 subLoadLabel.TextSize = 13
 subLoadLabel.ZIndex = 101
 
+----------------------------------------------------
+-- [수정] 자살 버튼 밑에 BOT AI 버튼 공간 확보를 위해 세로 크기 증가 (240 -> 275)
+----------------------------------------------------
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 400, 0, 240)
+frame.Size = UDim2.new(0, 400 * uiScale, 0, 275 * uiScale)
 frame.Position = UDim2.new(0.35, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
 frame.Active = _T
 frame.Visible = false
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6 * uiScale)
 
 local toggleBtn = Instance.new("TextButton", gui)
-toggleBtn.Size = UDim2.new(0, 80, 0, 28)
+toggleBtn.Size = UDim2.new(0, 80 * uiScale, 0, 28 * uiScale)
 toggleBtn.Position = UDim2.new(0, 10, 0.45, 0)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 toggleBtn.Text = "단어장 ON"
 toggleBtn.TextColor3 = Color3.new(1, 1, 1)
 toggleBtn.Font = Enum.Font.SourceSansBold
-toggleBtn.TextSize = 12
+toggleBtn.TextSize = math.round(12 * uiScale)
 toggleBtn.Visible = false
-Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 5 * uiScale)
 
 toggleBtn.MouseButton1Click:Connect(function()
     frame.Visible = not frame.Visible
@@ -292,12 +303,12 @@ toggleBtn.MouseButton1Click:Connect(function()
 end)
 
 local title = Instance.new("TextButton", frame)
-title.Size = UDim2.new(1, 0, 0, 26)
+title.Size = UDim2.new(1, 0, 0, 26 * uiScale)
 title.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 title.Text = "  끝말잇기 멀티 툴 (" .. #WordDB .. "개)"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
-title.TextSize = 11
+title.TextSize = math.round(11 * uiScale)
 title.TextXAlignment = Enum.TextXAlignment.Left
 Instance.new("UICorner", title)
 
@@ -324,40 +335,40 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 local mainTabSection = Instance.new("Frame", frame)
-mainTabSection.Size = UDim2.new(0.60, 0, 1, -26)
-mainTabSection.Position = UDim2.new(0, 0, 0, 26)
+mainTabSection.Size = UDim2.new(0.60, 0, 1, -26 * uiScale)
+mainTabSection.Position = UDim2.new(0, 0, 0, 26 * uiScale)
 mainTabSection.BackgroundTransparency = 1
 
 local searchBox = Instance.new("TextBox", mainTabSection)
-searchBox.Size = UDim2.new(1, -12, 0, 24)
-searchBox.Position = UDim2.new(0, 6, 0, 5)
+searchBox.Size = UDim2.new(1, -12 * uiScale, 0, 24 * uiScale)
+searchBox.Position = UDim2.new(0, 6 * uiScale, 0, 5 * uiScale)
 searchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 searchBox.PlaceholderText = "검색 글자..."
 searchBox.Text = ""
 searchBox.TextColor3 = Color3.new(1, 1, 1)
 searchBox.Font = Enum.Font.SourceSans
-searchBox.TextSize = 12
+searchBox.TextSize = math.round(12 * uiScale)
 searchBox.ClearTextOnFocus = false
 Instance.new("UICorner", searchBox)
 
 local scroll = Instance.new("ScrollingFrame", mainTabSection)
-scroll.Size = UDim2.new(1, -12, 1, -38)
-scroll.Position = UDim2.new(0, 6, 0, 33)
+scroll.Size = UDim2.new(1, -12 * uiScale, 1, -38 * uiScale)
+scroll.Position = UDim2.new(0, 6 * uiScale, 0, 33 * uiScale)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 3
+scroll.ScrollBarThickness = math.round(3 * uiScale)
 
 local layout = Instance.new("UIListLayout", scroll)
-layout.Padding = UDim.new(0, 3)
+layout.Padding = UDim.new(0, 3 * uiScale)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local rightControlSection = Instance.new("Frame", frame)
-rightControlSection.Size = UDim2.new(0.40, 0, 1, -26)
-rightControlSection.Position = UDim2.new(0.60, 0, 0, 26)
+rightControlSection.Size = UDim2.new(0.40, 0, 1, -26 * uiScale)
+rightControlSection.Position = UDim2.new(0.60, 0, 0, 26 * uiScale)
 rightControlSection.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
 rightControlSection.BorderSizePixel = 0
 
 local tabContainer = Instance.new("Frame", rightControlSection)
-tabContainer.Size = UDim2.new(1, 0, 0, 24)
+tabContainer.Size = UDim2.new(1, 0, 0, 24 * uiScale)
 tabContainer.Position = UDim2.new(0, 0, 0, 0)
 tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 
@@ -367,7 +378,7 @@ btnTabDict.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
 btnTabDict.Text = "단어장"
 btnTabDict.TextColor3 = Color3.fromRGB(0, 255, 140)
 btnTabDict.Font = Enum.Font.SourceSansBold
-btnTabDict.TextSize = 10
+btnTabDict.TextSize = math.round(10 * uiScale)
 
 local btnTabSpam = Instance.new("TextButton", tabContainer)
 btnTabSpam.Size = UDim2.new(0.5, 0, 1, 0)
@@ -376,157 +387,153 @@ btnTabSpam.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
 btnTabSpam.Text = "도배"
 btnTabSpam.TextColor3 = Color3.fromRGB(180, 180, 180)
 btnTabSpam.Font = Enum.Font.SourceSansBold
-btnTabSpam.TextSize = 10
+btnTabSpam.TextSize = math.round(10 * uiScale)
 
 local dictPanel = Instance.new("Frame", rightControlSection)
-dictPanel.Size = UDim2.new(1, 0, 1, -24)
-dictPanel.Position = UDim2.new(0, 0, 0, 24)
+dictPanel.Size = UDim2.new(1, 0, 1, -24 * uiScale)
+dictPanel.Position = UDim2.new(0, 0, 0, 24 * uiScale)
 dictPanel.BackgroundTransparency = 1
 
 local customInputBox = Instance.new("TextBox", dictPanel)
-customInputBox.Size = UDim2.new(1, -10, 0, 24)
-customInputBox.Position = UDim2.new(0, 5, 0, 6)
+customInputBox.Size = UDim2.new(1, -10 * uiScale, 0, 24 * uiScale)
+customInputBox.Position = UDim2.new(0, 5 * uiScale, 0, 6 * uiScale)
 customInputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 customInputBox.PlaceholderText = "수동 단어..."
 customInputBox.Text = ""
 customInputBox.TextColor3 = Color3.new(1, 1, 1)
 customInputBox.Font = Enum.Font.SourceSans
-customInputBox.TextSize = 11
+customInputBox.TextSize = math.round(11 * uiScale)
 customInputBox.ClearTextOnFocus = false
 Instance.new("UICorner", customInputBox)
 
 local customEnterBtn = Instance.new("TextButton", dictPanel)
-customEnterBtn.Size = UDim2.new(1, -10, 0, 22)
-customEnterBtn.Position = UDim2.new(0, 5, 0, 34)
+customEnterBtn.Size = UDim2.new(1, -10 * uiScale, 0, 22 * uiScale)
+customEnterBtn.Position = UDim2.new(0, 5 * uiScale, 0, 34 * uiScale)
 customEnterBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 85)
 customEnterBtn.Text = "Enter"
 customEnterBtn.TextColor3 = Color3.new(1, 1, 1)
 customEnterBtn.Font = Enum.Font.SourceSansBold
-customEnterBtn.TextSize = 10
+customEnterBtn.TextSize = math.round(10 * uiScale)
 Instance.new("UICorner", customEnterBtn)
 
 local speedLabel = Instance.new("TextLabel", dictPanel)
-speedLabel.Size = UDim2.new(1, 0, 0, 14)
-speedLabel.Position = UDim2.new(0, 0, 0, 60)
+speedLabel.Size = UDim2.new(1, 0, 0, 14 * uiScale)
+speedLabel.Position = UDim2.new(0, 0, 0, 60 * uiScale)
 speedLabel.BackgroundTransparency = 1
 speedLabel.Text = "타자 속도 (0=즉시)"
 speedLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
 speedLabel.Font = Enum.Font.SourceSansBold
-speedLabel.TextSize = 9
+speedLabel.TextSize = math.round(9 * uiScale)
 
 local speedInputBox = Instance.new("TextBox", dictPanel)
-speedInputBox.Size = UDim2.new(1, -10, 0, 22)
-speedInputBox.Position = UDim2.new(0, 5, 0, 76)
+speedInputBox.Size = UDim2.new(1, -10 * uiScale, 0, 22 * uiScale)
+speedInputBox.Position = UDim2.new(0, 5 * uiScale, 0, 76 * uiScale)
 speedInputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 speedInputBox.Text = "400" 
 speedInputBox.TextColor3 = Color3.fromRGB(0, 255, 140)
 speedInputBox.Font = Enum.Font.Code
-speedInputBox.TextSize = 11
+speedInputBox.TextSize = math.round(11 * uiScale)
 speedInputBox.ClearTextOnFocus = false
 Instance.new("UICorner", speedInputBox)
 
 local killSelfBtn = Instance.new("TextButton", dictPanel)
-killSelfBtn.Size = UDim2.new(1, -10, 0, 24)
-killSelfBtn.Position = UDim2.new(0, 5, 0, 108) 
+killSelfBtn.Size = UDim2.new(1, -10 * uiScale, 0, 24 * uiScale)
+killSelfBtn.Position = UDim2.new(0, 5 * uiScale, 0, 108 * uiScale) 
 killSelfBtn.BackgroundColor3 = Color3.fromRGB(150, 35, 45) 
 killSelfBtn.Text = "자살 "
 killSelfBtn.TextColor3 = Color3.new(1, 1, 1)
 killSelfBtn.Font = Enum.Font.SourceSansBold
-killSelfBtn.TextSize = 11
+killSelfBtn.TextSize = math.round(11 * uiScale)
 Instance.new("UICorner", killSelfBtn)
 
+----------------------------------------------------
+-- [추가] 자살 연타 버튼 바로 아래에 'BOT AI 모드' 버튼 추가
+----------------------------------------------------
+local botAiActive = false
+
+local botAiBtn = Instance.new("TextButton", dictPanel)
+botAiBtn.Size = UDim2.new(1, -10 * uiScale, 0, 26 * uiScale)
+botAiBtn.Position = UDim2.new(0, 5 * uiScale, 0, 138 * uiScale)
+botAiBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+botAiBtn.Text = " BOT AI: OFF"
+botAiBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+botAiBtn.Font = Enum.Font.SourceSansBold
+botAiBtn.TextSize = math.round(11 * uiScale)
+Instance.new("UICorner", botAiBtn)
+
+botAiBtn.MouseButton1Click:Connect(function()
+    botAiActive = not botAiActive
+    if botAiActive then
+        botAiBtn.Text = " BOT AI: ON"
+        botAiBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 140)
+        botAiBtn.TextColor3 = Color3.fromRGB(255, 200, 255)
+    else
+        botAiBtn.Text = " BOT AI: OFF"
+        botAiBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+        botAiBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end)
+----------------------------------------------------
+
 local spamPanel = Instance.new("Frame", rightControlSection)
-spamPanel.Size = UDim2.new(1, 0, 1, -24)
-spamPanel.Position = UDim2.new(0, 0, 0, 24)
+spamPanel.Size = UDim2.new(1, 0, 1, -24 * uiScale)
+spamPanel.Position = UDim2.new(0, 0, 0, 24 * uiScale)
 spamPanel.BackgroundTransparency = 1
 spamPanel.Visible = false
 
 local chatSpamBtn = Instance.new("TextButton", spamPanel)
-chatSpamBtn.Size = UDim2.new(0.5, -6, 0, 24)
-chatSpamBtn.Position = UDim2.new(0, 4, 0, 6)
+chatSpamBtn.Size = UDim2.new(0.5, -6 * uiScale, 0, 24 * uiScale)
+chatSpamBtn.Position = UDim2.new(0, 4 * uiScale, 0, 6 * uiScale)
 chatSpamBtn.BackgroundColor3 = Color3.fromRGB(120, 75, 20)
 chatSpamBtn.Text = "채팅도배"
 chatSpamBtn.TextColor3 = Color3.new(1, 1, 1)
 chatSpamBtn.Font = Enum.Font.SourceSansBold
-chatSpamBtn.TextSize = 10
+chatSpamBtn.TextSize = math.round(10 * uiScale)
 Instance.new("UICorner", chatSpamBtn)
 
 local gameSpamBtn = Instance.new("TextButton", spamPanel)
-gameSpamBtn.Size = UDim2.new(0.5, -6, 0, 24)
-gameSpamBtn.Position = UDim2.new(0.5, 2, 0, 6)
+gameSpamBtn.Size = UDim2.new(0.5, -6 * uiScale, 0, 24 * uiScale)
+gameSpamBtn.Position = UDim2.new(0.5, 2 * uiScale, 0, 6 * uiScale)
 gameSpamBtn.BackgroundColor3 = Color3.fromRGB(25, 85, 140)
 gameSpamBtn.Text = "게임도배"
 gameSpamBtn.TextColor3 = Color3.new(1, 1, 1)
 gameSpamBtn.Font = Enum.Font.SourceSansBold
-gameSpamBtn.TextSize = 10
+gameSpamBtn.TextSize = math.round(10 * uiScale)
 Instance.new("UICorner", gameSpamBtn)
 
 local spamTextBox = Instance.new("TextBox", spamPanel)
-spamTextBox.Size = UDim2.new(1, -10, 0, 24)
-spamTextBox.Position = UDim2.new(0, 5, 0, 36)
+spamTextBox.Size = UDim2.new(1, -10 * uiScale, 0, 24 * uiScale)
+spamTextBox.Position = UDim2.new(0, 5 * uiScale, 0, 36 * uiScale)
 spamTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 spamTextBox.PlaceholderText = "도배 내용..."
 spamTextBox.Text = ""
 spamTextBox.TextColor3 = Color3.new(1, 1, 1)
 spamTextBox.Font = Enum.Font.SourceSans
-spamTextBox.TextSize = 11
+spamTextBox.TextSize = math.round(11 * uiScale)
 spamTextBox.ClearTextOnFocus = false
 Instance.new("UICorner", spamTextBox)
 
 local spamCountLabel = Instance.new("TextLabel", spamPanel)
-spamCountLabel.Size = UDim2.new(1, 0, 0, 14)
-spamCountLabel.Position = UDim2.new(0, 0, 0, 66)
+spamCountLabel.Size = UDim2.new(1, 0, 0, 14 * uiScale)
+spamCountLabel.Position = UDim2.new(0, 0, 0, 66 * uiScale)
 spamCountLabel.BackgroundTransparency = 1
 spamCountLabel.Text = "횟수 (1~10)"
 spamCountLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
 spamCountLabel.Font = Enum.Font.SourceSansBold
-spamCountLabel.TextSize = 10
+spamCountLabel.TextSize = math.round(10 * uiScale)
 
 local spamCountBox = Instance.new("TextBox", spamPanel)
-spamCountBox.Size = UDim2.new(1, -10, 0, 24)
-spamCountBox.Position = UDim2.new(0, 5, 0, 82)
+spamCountBox.Size = UDim2.new(1, -10 * uiScale, 0, 24 * uiScale)
+spamCountBox.Position = UDim2.new(0, 5 * uiScale, 0, 82 * uiScale)
 spamCountBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 spamCountBox.Text = "5"
 spamCountBox.TextColor3 = Color3.fromRGB(255, 200, 50)
 spamCountBox.Font = Enum.Font.Code
-spamCountBox.TextSize = 12
+spamCountBox.TextSize = math.round(12 * uiScale)
 spamCountBox.ClearTextOnFocus = false
 Instance.new("UICorner", spamCountBox)
 
-local aiModeBtn = Instance.new("TextButton", spamPanel)
-aiModeBtn.Size = UDim2.new(1, -10, 0, 24)
-aiModeBtn.Position = UDim2.new(0, 5, 0, 114)
-aiModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-aiModeBtn.Text = "AI 모드: OFF"
-aiModeBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-aiModeBtn.Font = Enum.Font.SourceSansBold
-aiModeBtn.TextSize = 11
-Instance.new("UICorner", aiModeBtn)
-
-local aiModeActive = false
 local currentTypeSession = 0 
-
-local aiPhrases = {
-    "쉽네 ㅋㅋㅋㅋㅋㅋ",
-    "겁나 못하넼ㅋㅋㅋㅋ",
-    "공부좀해라 넌 ㅋㅋㅋㅋ",
-    "화났어요?~~",
-    "에휴 ㅉㅉ"
-}
-
-aiModeBtn.MouseButton1Click:Connect(function()
-    aiModeActive = not aiModeActive
-    if aiModeActive then
-        aiModeBtn.Text = "AI 모드: ON"
-        aiModeBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 140)
-        aiModeBtn.TextColor3 = Color3.fromRGB(255, 200, 255)
-    else
-        aiModeBtn.Text = "AI 모드: OFF"
-        aiModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-        aiModeBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-        currentTypeSession = currentTypeSession + 1 
-    end
-end)
 
 btnTabDict.MouseButton1Click:Connect(function()
     btnTabDict.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
@@ -590,15 +597,12 @@ local function findGameTextBox()
     return nil
 end
 
-local function sendWordToGame(word, isAiMode)
+local function sendWordToGame(word)
     if word == "" then return end
     local targetBox = findGameTextBox()
     if not targetBox then return end
     
-    if not isAiMode then
-        currentTypeSession = currentTypeSession + 1
-    end
-    
+    currentTypeSession = currentTypeSession + 1
     local mySession = currentTypeSession
     local speed = tonumber(speedInputBox.Text) or 400
     
@@ -620,21 +624,8 @@ local function sendWordToGame(word, isAiMode)
         end
         
         if mySession ~= currentTypeSession then return end
-        
-        if isAiMode then
-            local waitTime = 0
-            while waitTime < 3 do
-                if mySession ~= currentTypeSession then return end 
-                task.wait(0.1)
-                waitTime = waitTime + 0.1
-            end
-            if mySession == currentTypeSession then
-                targetBox:ReleaseFocus(false) 
-            end
-        else
-            task.wait(0.01)
-            targetBox:ReleaseFocus(_T) 
-        end
+        task.wait(0.01)
+        targetBox:ReleaseFocus(_T) 
     end)
 end
 
@@ -738,21 +729,17 @@ customInputBox.FocusLost:Connect(function(enterPressed)
     end
 end)
 
-----------------------------------------------------
--- [수정] 단어 렌더링 생성 내부 로직 (6글자 이상 최우선 필터 추가)
-----------------------------------------------------
 local function createWordElement(w)
     local lbl = Instance.new("TextButton", scroll)
-    lbl.Size = UDim2.new(1, -4, 0, 22) 
+    lbl.Size = UDim2.new(1, -4 * uiScale, 0, 22 * uiScale) 
     lbl.Font = Enum.Font.SourceSansBold
-    lbl.TextSize = 11
+    lbl.TextSize = math.round(11 * uiScale)
     lbl.TextXAlignment = Enum.TextXAlignment.Left
-    Instance.new("UICorner", lbl)
+    Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 4 * uiScale)
 
     local wLen = utf8.len(w) or #w
 
     if wLen >= 6 then
-        -- 6개 글자 이상인 장문 단어 (한방 단어보다 높은 LayoutOrder = 0 지정)
         lbl.BackgroundColor3 = Color3.fromRGB(110, 40, 150)
         lbl.Text = " 👑 [초장문] " .. w
         lbl.TextColor3 = Color3.fromRGB(240, 200, 255)
@@ -773,7 +760,47 @@ local function createWordElement(w)
         lbl.TextColor3 = Color3.fromRGB(130, 255, 170)
         lbl.LayoutOrder = 3
     end
-    lbl.MouseButton1Click:Connect(function() sendWordToGame(w, false) end)
+    lbl.MouseButton1Click:Connect(function() sendWordToGame(w) end)
+end
+
+----------------------------------------------------
+-- [추가] BOT AI 자동 탐색용 풀링 데이터 획득 함수
+----------------------------------------------------
+local function getBestWordForChar(key)
+    if key == "" then return nil end
+    local targets = getCompatibleChars(key)
+    local uniqueCheck = {}
+    
+    local tier1, tier2, tier3, tier4 = {}, {}, {}, {}
+
+    local function sortAndInsert(w)
+        if uniqueCheck[w] then return end
+        uniqueCheck[w] = true
+        local wLen = utf8.len(w) or #w
+        if wLen >= 6 then table.insert(tier1, w)
+        elseif checkIsKillWord(w) then table.insert(tier2, w)
+        elseif checkIsChobanWord(w) then table.insert(tier3, w)
+        else table.insert(tier4, w) end
+    end
+
+    for _, w in ipairs(WordDB) do
+        for _, target in ipairs(targets) do
+            if string.sub(w, 1, string.len(target)) == target then sortAndInsert(w) break end
+        end
+    end
+
+    for _, target in ipairs(targets) do
+        if DICT and DICT[target] then
+            for _, w in ipairs(DICT[target]) do sortAndInsert(w) end
+        end
+    end
+
+    -- 우선순위 매칭 알고리즘 
+    if #tier1 > 0 then return tier1[math.random(1, #tier1)] end
+    if #tier2 > 0 then return tier2[math.random(1, #tier2)] end
+    if #tier3 > 0 then return tier3[math.random(1, #tier3)] end
+    if #tier4 > 0 then return tier4[math.random(1, #tier4)] end
+    return nil
 end
 
 local function updateView(key)
@@ -807,7 +834,7 @@ local function updateView(key)
             end
         end
     end
-    scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 4)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + (4 * uiScale))
     return resultCount
 end
 
@@ -872,15 +899,22 @@ task.spawn(function()
                 searchBox.Text = ch
                 updateView(ch)
                 
-                if aiModeActive then
+                ----------------------------------------------------
+                -- [수정] BOT AI 모드 활성화 시 자동 플레이 작동 섹션
+                ----------------------------------------------------
+                if botAiActive then
                     task.spawn(function()
-                        task.wait(0.1) 
-                        local randomPhrase = aiPhrases[math.random(1, #aiPhrases)]
-                        sendWordToGame(randomPhrase, true)
+                        task.wait(0.2) -- 자연스러운 딜레이 레이턴시
+                        local bestWord = getBestWordForChar(ch)
+                        if bestWord then
+                            sendWordToGame(bestWord)
+                        end
                     end)
                 end
+                ----------------------------------------------------
             end
             if frame.Visible then title.Text = " 글자: '" .. ch .. "'" .. currentTime end
         elseif frame.Visible then title.Text = " 대기 중" .. currentTime end
     end
 end)
+
