@@ -1,22 +1,84 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- =======================================================================
+-- [업데이트 로그 윈도우 인터페이스 모듈]
+-- =======================================================================
+local function showUpdateLogWindow(premiumStatus)
+    local bgFrame = Instance.new("Frame", logGui)
+    bgFrame.Size = UDim2.new(0, 360, 0, 240)
+    bgFrame.Position = UDim2.new(0.5, -180, 0.4, -120)
+    bgFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    bgFrame.BorderSizePixel = 0
+    bgFrame.Active = true
+    bgFrame.Draggable = true
+    Instance.new("UICorner", bgFrame).CornerRadius = UDim.new(0, 8)
 
-local Window = Fluent:CreateWindow({
-    Title = "Notice",
-    SubTitle = "Executor System",
-    TabWidth = 120,
-    Size = UDim2.fromOffset(500, 320),
-    Acrylic = false,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
-})
+    local titleLabel = Instance.new("TextLabel", bgFrame)
+    titleLabel.Size = UDim2.new(1, 0, 0, 40)
+    titleLabel.Position = UDim2.new(0, 0, 0, 10)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = "Upd log"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 22
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Notice", Icon = "info" })
-}
+    local statusLabel = Instance.new("TextLabel", bgFrame)
+    statusLabel.Size = UDim2.new(1, -20, 0, 30)
+    statusLabel.Position = UDim2.new(0, 10, 0, 50)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Font = Enum.Font.SourceSansBold
+    statusLabel.TextSize = 14
 
-Tabs.Main:AddParagraph({
-    Title = " 스크립트 업데이트 안내",
-    Content = "새 스크립트(loadstring)를 디코에서 새로 얻으세요.\nhttps://discord.gg/JX32GUj5WS"
-})
+    if premiumStatus then
+        statusLabel.Text = "당신은 프리미엄 유저 입니다"
+        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 140)
+    else
+        statusLabel.Text = "당신은 프리미엄에 등록되지 않았습니다 (기능 제한됨)"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 75, 75)
+    end
 
-Window:SelectTab(1)
+    local line = Instance.new("Frame", bgFrame)
+    line.Size = UDim2.new(1, -40, 0, 1)
+    line.Position = UDim2.new(0, 20, 0, 85)
+    line.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    line.BorderSizePixel = 0
+
+    local contentFrame = Instance.new("Frame", bgFrame)
+    contentFrame.Size = UDim2.new(1, -40, 0, 100)
+    contentFrame.Position = UDim2.new(0, 20, 0, 95)
+    contentFrame.BackgroundTransparency = 1
+
+    local info1 = Instance.new("TextLabel", contentFrame)
+    info1.Size = UDim2.new(1, 0, 0, 20)
+    info1.Position = UDim2.new(0, 0, 0, 5)
+    info1.BackgroundTransparency = 1
+    info1.Text = "+ 프리미엄 도입 및 권한 개편"
+    info1.TextColor3 = Color3.fromRGB(220, 220, 220)
+    info1.Font = Enum.Font.SourceSansBold
+    info1.TextSize = 12
+    info1.TextXAlignment = Enum.TextXAlignment.Left
+
+    local info2 = Instance.new("TextLabel", contentFrame)
+    info2.Size = UDim2.new(1, 0, 0, 50)
+    info2.Position = UDim2.new(0, 0, 0, 25)
+    info2.BackgroundTransparency = 1
+    info2.Text = "+ 프리미엄 전용: 단어 개수 100% 노출 및 분류 제공\n+ 프리미엄 전용: 안티 밴 및 봇 AI 기능 활성화\n(미등록 유저는 검색 단어 50% 제한 및 AI 차단)"
+    info2.TextColor3 = Color3.fromRGB(160, 160, 170)
+    info2.Font = Enum.Font.SourceSans
+    info2.TextSize = 11
+    info2.TextWrapped = true
+    info2.TextXAlignment = Enum.TextXAlignment.Left
+    info2.TextYAlignment = Enum.TextYAlignment.Top
+
+    local closeBtn = Instance.new("TextButton", bgFrame)
+    closeBtn.Size = UDim2.new(0, 100, 0, 30)
+    closeBtn.Position = UDim2.new(0.5, -50, 1, -45)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    closeBtn.Text = "확인"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.Font = Enum.Font.SourceSansBold
+    closeBtn.TextSize = 12
+    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
+
+    closeBtn.MouseButton1Click:Connect(function()
+        logGui:Destroy()
+    end)
+end
