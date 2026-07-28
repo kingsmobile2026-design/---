@@ -1,7 +1,5 @@
--- =======================================================================
--- [업데이트 로그 윈도우 인터페이스 모듈]
--- =======================================================================
-local function showUpdateLogWindow(premiumStatus)
+-- URL에 저장할 update_log.lua 내용
+return function(premiumStatus, logGui)
     local bgFrame = Instance.new("Frame", logGui)
     bgFrame.Size = UDim2.new(0, 360, 0, 240)
     bgFrame.Position = UDim2.new(0.5, -180, 0.4, -120)
