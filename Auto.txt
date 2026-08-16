@@ -197,7 +197,7 @@ local MIN_INTERVAL = 1.0
 local MAX_INTERVAL = 10.0
 local flySpeedSetting = 25.0
 local MIN_FLY_SPEED = 5.0
-local MAX_FLY_SPEED = 100.0
+local MAX_FLY_SPlayer = 300.0
 
 local currentTarget = nil
 local targetAttackStartTime = 0
@@ -756,7 +756,7 @@ local function createSlider(labelText, minV, maxV, defaultVal, isInteger, layout
 	end)
 end
 
-createSlider("나무 이동 주기", MIN_INTERVAL, MAX_INTERVAL, 3.0, false, 14, function(v) treeInterval = v end)
+ createSlider("나무 이동 주기", MIN_INTERVAL, MAX_INTERVAL, 3.0, false, 14, function(v) treeInterval = v end)
 createSlider("몬스터 이동 주기", MIN_INTERVAL, MAX_INTERVAL, 3.0, false, 15, function(v) monsterInterval = v end)
 createSlider("플라이 이동 속도", MIN_FLY_SPEED, MAX_FLY_SPEED, 25.0, true, 16, function(v) flySpeedSetting = v end)
 createSlider("이동 속도 설정 (WalkSpeed)", 16, 500, customWalkSpeed, true, 17, function(v) customWalkSpeed = v end)
